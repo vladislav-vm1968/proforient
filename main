@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест на профориентацию</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: white;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+        .header {
+            background-color: #FFCDD2;
+            color: #B71C1C;
+            padding: 30px;
+            font-size: 26px;
+            border: 2px solid #B71C1C;
+            margin: 10px auto;
+            max-width: 900px;
+            border-radius: 10px;
+        }
+        .subheader {
+            background-color: #FFCDD2;
+            color: #1c1cb7;
+            padding: 15px;
+            font-size: 14px;
+            border: 2px solid #1c1cb7;
+            margin: 10px auto;
+            max-width: 900px;
+            border-radius: 10px;
+        }
+        .question-container {
+            display: none;
+            max-width: 900px;
+            margin: 20px auto;
+        }
+        .question {
+            font-size: 18px;
+            background-color: #1cb7b7;
+            color: #B71C1C;
+            padding: 30px;
+            border: 2px solid #B71C1C;
+            border-radius: 10px;
+        }
+        .options {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+        .option {
+            width: 300px;
+            margin: 10px;
+            padding: 20px;
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .option:hover {
+            background-color: #e0e0e0;
+            transform: scale(1.02);
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .option img {
+            width: 100px;
+            height: 100px;
+            margin-bottom: 10px;
+            object-fit: contain;
+        }
+        .start-btn, .restart-btn {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 20px auto;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        .start-btn:hover, .restart-btn:hover {
+            background-color: #45a049;
+        }
+        .result-container {
+            display: none;
+            max-width: 900px;
+            margin: 20px auto;
+        }
+        .result-header {
+            font-size: 24px;
+            background-color: #1cb7b7;
+            color: #B71C1C;
+            padding: 20px;
+            border: 2px solid #B71C1C;
+            border-radius: 10px;
+        }
+        .scores {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        .score {
+            background-color: #1cb7b7;
+            color: #B71C1C;
+            padding: 10px 20px;
+            margin: 5px;
+            border: 1px solid #B71C1C;
+            border-radius: 5px;
+            min-width: 120px;
+        }
+        .recommendation {
+            background-color: #FFCDD2;
+            color: #B71C1C;
+            padding: 20px;
+            border: 2px solid #B71C1C;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: left;
+        }
+        .careers {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .career {
+            width: 150px;
+            margin: 10px;
+            padding: 15px;
+            background-color: #FFCDD2;
+            border: 1px solid #B71C1C;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .career:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+        }
+        .career img {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 10px;
+            object-fit: contain;
+        }
+        .career-details {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 30px;
+            border: 2px solid #B71C1C;
+            border-radius: 10px;
+            z-index: 100;
+            max-width: 600px;
+            width: 90%;
+            box-shadow: 0 0 20px rgba(0,0,0,0.3);
+        }
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            cursor: pointer;
+            font-size: 20px;
+            color: #B71C1C;
+        }
+        .progress-container {
+            width: 100%;
+            background-color: #f0f0f0;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .progress-bar {
+            height: 20px;
+            background-color: #4CAF50;
+            border-radius: 5px;
+            width: 0%;
+            transition: width 0.5s;
+        }
+    </style>
+</head>
+<body>
+    <!-- Начальный экран -->
+    <div id="start-screen">
+        <div class="header">Программа-опросник на профориентацию</div>
+        <div class="subheader">Программу создал Малышев Максим, Гимназия №4, 6В</div>
+        <button class="start-btn" onclick="startTest()">Приступить к прохождению теста</button>
+    </div>
+
+    <!-- Экран вопроса -->
+    <div id="question-screen" class="question-container">
+        <div class="question" id="question-text">Вопрос 1 - Что вы выберите?</div>
+        <div class="progress-container">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+        <div class="options">
+            <div class="option" onclick="selectOption(1)">
+                <img id="option1-img" src="" alt="Вариант 1">
+                <div id="option1-text">Текст варианта 1</div>
+            </div>
+            <div class="option" onclick="selectOption(2)">
+                <img id="option2-img" src="" alt="Вариант 2">
+                <div id="option2-text">Текст варианта 2</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Экран результатов -->
+    <div id="result-screen" class="result-container">
+        <div class="result-header">Ваш итоговый профиль</div>
+        
+        <div class="scores">
+            <div class="score">Природа: <span id="nature-score">0</span></div>
+            <div class="score">Техника: <span id="tech-score">0</span></div>
+            <div class="score">Человек: <span id="human-score">0</span></div>
+            <div class="score">Знак: <span id="sign-score">0</span></div>
+            <div class="score">Образ: <span id="art-score">0</span></div>
+        </div>
+
+        <div class="recommendation" id="recommendation-text"></div>
+        
+        <div id="careers-container">
+            <!-- Профессии будут добавлены динамически -->
+        </div>
+        
+        <button class="restart-btn" onclick="restartTest()">Пройти тест снова</button>
+    </div>
+
+    <!-- Подробности о профессии -->
+    <div id="career-details" class="career-details">
+        <span class="close-btn" onclick="closeCareerDetails()">×</span>
+        <h2 id="career-title"></h2>
+        <img id="career-detail-img" src="" alt="" style="max-width: 300px; max-height: 300px; margin: 10px auto; display: block;">
+        <div id="career-description"></div>
+    </div>
+
+    <script>
+        // Все вопросы из CSV (20 пар = 40 вопросов)
+        const questions = [
+            // Первая пара вопросов (1-2)
+            { 
+                id: 1, 
+                option1: "Ухаживать за животными", 
+                option2: "Обслуживать какие-нибудь приборы, следить за ними, регулировать их", 
+                sphere1: "nature", 
+                sphere2: "tech",
+                img1: "https://via.placeholder.com/100?text=Животные",
+                img2: "https://via.placeholder.com/100?text=Приборы"
+            },
+            // Вторая пара вопросов (3-4)
+            { 
+                id: 2, 
+                option1: "Помогать больным людям, лечить их", 
+                option2: "Составлять таблицы, чертить схемы, разрабатывать компьютерные программы", 
+                sphere1: "human", 
+                sphere2: "sign",
+                img1: "https://via.placeholder.com/100?text=Медицина",
+                img2: "https://via.placeholder.com/100?text=Программы"
+            },
+            // Третья пара вопросов (5-6)
+            { 
+                id: 3, 
+                option1: "Рассматривать книжные иллюстрации, художественные открытки, конверты", 
+                option2: "Следить за состоянием и развитием растений", 
+                sphere1: "art", 
+                sphere2: "nature",
+                img1: "https://via.placeholder.com/100?text=Искусство",
+                img2: "https://via.placeholder.com/100?text=Растения"
+            },
+            // Четвертая пара вопросов (7-8)
+            { 
+                id: 4, 
+                option1: "Обрабатывать материалы (дерево, ткань, металл, пластмассу и т.п.)", 
+                option2: "Доводить товары до потребителя, рекламировать, продавать", 
+                sphere1: "tech", 
+                sphere2: "human",
+                img1: "https://via.placeholder.com/100?text=Материалы",
+                img2: "https://via.placeholder.com/100?text=Продажи"
+            },
+            // Пятая пара вопросов (9-10)
+            { 
+                id: 5, 
+                option1: "Обсуждать научно-популярные книги, статьи", 
+                option2: "Обсуждать художественные книги, пьесы, концерты", 
+                sphere1: "sign", 
+                sphere2: "art",
+                img1: "https://via.placeholder.com/100?text=Наука",
+                img2: "https://via.placeholder.com/100?text=Искусство"
+            },
+            // Шестая пара вопросов (11-12)
+            { 
+                id: 6, 
+                option1: "Выращивать молодняк (животных какой-либо породы)", 
+                option2: "Тренировать товарищей (или младших) в выполнении каких-либо действий", 
+                sphere1: "nature", 
+                sphere2: "human",
+                img1: "https://via.placeholder.com/100?text=Животные",
+                img2: "https://via.placeholder.com/100?text=Тренировки"
+            },
+            // Седьмая пара вопросов (13-14)
+            { 
+                id: 7, 
+                option1: "Копировать рисунки, изображения или настраивать музыкальные инструменты", 
+                option2: "Управлять каким-либо грузовым средством (подъемным краном, трактором и др.)", 
+                sphere1: "art", 
+                sphere2: "tech",
+                img1: "https://via.placeholder.com/100?text=Искусство",
+                img2: "https://via.placeholder.com/100?text=Техника"
+            },
+            // Восьмая пара вопросов (15-16)
+            { 
+                id: 8, 
+                option1: "Сообщать, разъяснять людям нужные им сведения", 
+                option2: "Оформлять выставки, витрины", 
+                sphere1: "human", 
+                sphere2: "art",
+                img1: "https://via.placeholder.com/100?text=Общение",
+                img2: "https://via.placeholder.com/100?text=Оформление"
+            },
+            // Девятая пара вопросов (17-18)
+            { 
+                id: 9, 
+                option1: "Ремонтировать вещи, изделия (одежду, технику, жилище)", 
+                option2: "Искать и исправлять ошибки в текстах, таблицах, рисунках", 
+                sphere1: "tech", 
+                sphere2: "sign",
+                img1: "https://via.placeholder.com/100?text=Ремонт",
+                img2: "https://via.placeholder.com/100?text=Ошибки"
+            },
+            // Десятая пара вопросов (19-20)
+            { 
+                id: 10, 
+                option1: "Лечить животных", 
+                option2: "Выполнять вычисления, расчеты", 
+                sphere1: "nature", 
+                sphere2: "sign",
+                img1: "https://via.placeholder.com/100?text=Ветеринария",
+                img2: "https://via.placeholder.com/100?text=Вычисления"
+            },
+            // 11-я пара вопросов (21-22)
+            { 
+                id: 11, 
+                option1: "Выводить новые сорта растений", 
+                option2: "Конструировать, проектировать новые виды промышленных изделий", 
+                sphere1: "nature", 
+                sphere2: "tech",
+                img1: "https://via.placeholder.com/100?text=Растения",
+                img2: "https://via.placeholder.com/100?text=Конструирование"
+            },
+            // 12-я пара вопросов (23-24)
+            { 
+                id: 12, 
+                option1: "Разбирать споры, ссоры между людьми", 
+                option2: "Разбираться в чертежах, схемах, таблицах", 
+                sphere1: "human", 
+                sphere2: "sign",
+                img1: "https://via.placeholder.com/100?text=Конфликты",
+                img2: "https://via.placeholder.com/100?text=Чертежи"
+            },
+            // 13-я пара вопросов (25-26)
+            { 
+                id: 13, 
+                option1: "Наблюдать, изучать работу кружков художественной самодеятельности", 
+                option2: "Наблюдать, изучать жизнь микробов", 
+                sphere1: "art", 
+                sphere2: "nature",
+                img1: "https://via.placeholder.com/100?text=Творчество",
+                img2: "https://via.placeholder.com/100?text=Микробы"
+            },
+            // 14-я пара вопросов (27-28)
+            { 
+                id: 14, 
+                option1: "Обслуживать, налаживать медицинские приборы, аппараты", 
+                option2: "Оказывать людям медицинскую помощь при ранениях, ушибах", 
+                sphere1: "tech", 
+                sphere2: "human",
+                img1: "https://via.placeholder.com/100?text=Медтехника",
+                img2: "https://via.placeholder.com/100?text=Помощь"
+            },
+            // 15-я пара вопросов (29-30)
+            { 
+                id: 15, 
+                option1: "Составлять точные описания - отчеты о наблюдениях, явлениях", 
+                option2: "Художественно описывать, изображать события", 
+                sphere1: "sign", 
+                sphere2: "art",
+                img1: "https://via.placeholder.com/100?text=Отчеты",
+                img2: "https://via.placeholder.com/100?text=Творчество"
+            },
+            // 16-я пара вопросов (31-32)
+            { 
+                id: 16, 
+                option1: "Делать лабораторные анализы в больнице", 
+                option2: "Принимать, осматривать больных, беседовать с ними", 
+                sphere1: "nature", 
+                sphere2: "human",
+                img1: "https://via.placeholder.com/100?text=Анализы",
+                img2: "https://via.placeholder.com/100?text=Прием"
+            },
+            // 17-я пара вопросов (33-34)
+            { 
+                id: 17, 
+                option1: "Красить или расписывать стены помещений, поверхность изделий", 
+                option2: "Осуществлять монтаж или сборку машин, приборов", 
+                sphere1: "art", 
+                sphere2: "tech",
+                img1: "https://via.placeholder.com/100?text=Роспись",
+                img2: "https://via.placeholder.com/100?text=Монтаж"
+            },
+            // 18-я пара вопросов (35-36)
+            { 
+                id: 18, 
+                option1: "Организовывать культпоходы сверстников или младших", 
+                option2: "Играть на сцене, принимать участие в концертах", 
+                sphere1: "human", 
+                sphere2: "art",
+                img1: "https://via.placeholder.com/100?text=Организация",
+                img2: "https://via.placeholder.com/100?text=Сцена"
+            },
+            // 19-я пара вопросов (37-38)
+            { 
+                id: 19, 
+                option1: "Изготовлять по чертежам детали, изделия, строить здания", 
+                option2: "Заниматься черчением, копировать чертежи, карты", 
+                sphere1: "tech", 
+                sphere2: "sign",
+                img1: "https://via.placeholder.com/100?text=Изготовление",
+                img2: "https://via.placeholder.com/100?text=Черчение"
+            },
+            // 20-я пара вопросов (39-40)
+            { 
+                id: 20, 
+                option1: "Вести борьбу с болезнями растений, с вредителями леса, сада", 
+                option2: "Работать на клавишных машинах (пишущей машинке, компьютере и др.)", 
+                sphere1: "nature", 
+                sphere2: "sign",
+                img1: "https://via.placeholder.com/100?text=Растения",
+                img2: "https://via.placeholder.com/100?text=Компьютер"
+            }
+        ];
+
+        // Данные профессий
+        const careers = {
+            nature: [
+                { 
+                    title: "Ветеринар", 
+                    description: "Ветеринар занимается лечением животных, профилактикой заболеваний и уходом за ними. Требует любви к животным и биологических знаний.", 
+                    img: "https://via.placeholder.com/300?text=Ветеринар" 
+                },
+                { 
+                    title: "Биолог", 
+                    description: "Биолог изучает живые организмы и их взаимодействие с окружающей средой. Может специализироваться в различных областях: ботаника, зоология, микробиология.", 
+                    img: "https://via.placeholder.com/300?text=Биолог" 
+                },
+                { 
+                    title: "Агроном", 
+                    description: "Агроном занимается выращиванием сельскохозяйственных культур, улучшением их качества и повышением урожайности.", 
+                    img: "https://via.placeholder.com/300?text=Агроном" 
+                },
+                { 
+                    title: "Эколог", 
+                    description: "Эколог изучает взаимодействие живых организмов с окружающей средой и разрабатывает меры по охране природы.", 
+                    img: "https://via.placeholder.com/300?text=Эколог" 
+                },
+                { 
+                    title: "Геолог", 
+                    description: "Геолог изучает состав и строение Земли, занимается поиском полезных ископаемых.", 
+                    img: "https://via.placeholder.com/300?text=Геолог" 
+                }
+            ],
+            tech: [
+                { 
+                    title: "Инженер", 
+                    description: "Инженер проектирует, разрабатывает и тестирует технические системы и оборудование в различных областях промышленности.", 
+                    img: "https://via.placeholder.com/300?text=Инженер" 
+                },
+                { 
+                    title: "Энергетик", 
+                    description: "Инженер-энергетик занимается проектированием, эксплуатацией и ремонтом энергетических систем и оборудования.", 
+                    img: "https://via.placeholder.com/300?text=Энергетик" 
+                },
+                { 
+                    title: "Строитель", 
+                    description: "Инженер-строитель проектирует и возводит здания, мосты, дороги и другие сооружения.", 
+                    img: "https://via.placeholder.com/300?text=Строитель" 
+                },
+                { 
+                    title: "Механик", 
+                    description: "Механик занимается ремонтом и обслуживанием механического оборудования, автомобилей, промышленных машин.", 
+                    img: "https://via.placeholder.com/300?text=Механик" 
+                },
+                { 
+                    title: "Электроник", 
+                    description: "Инженер-электроник разрабатывает и обслуживает электронные приборы и системы.", 
+                    img: "https://via.placeholder.com/300?text=Электроник" 
+                }
+            ],
+            human: [
+                { 
+                    title: "Врач", 
+                    description: "Врач диагностирует и лечит заболевания, оказывает медицинскую помощь пациентам. Существует множество медицинских специализаций.", 
+                    img: "https://via.placeholder.com/300?text=Врач" 
+                },
+                { 
+                    title: "Учитель", 
+                    description: "Учитель передает знания ученикам, воспитывает и помогает в развитии. Может преподавать различные предметы.", 
+                    img: "https://via.placeholder.com/300?text=Учитель" 
+                },
+                { 
+                    title: "Психолог", 
+                    description: "Психолог помогает людям решать эмоциональные и поведенческие проблемы, проводит консультации и тренинги.", 
+                    img: "https://via.placeholder.com/300?text=Психолог" 
+                },
+                { 
+                    title: "Менеджер", 
+                    description: "Менеджер по продажам занимается реализацией товаров и услуг, работой с клиентами и развитием бизнеса.", 
+                    img: "https://via.placeholder.com/300?text=Менеджер" 
+                },
+                { 
+                    title: "Юрист", 
+                    description: "Юрист оказывает правовую помощь, защищает интересы клиентов в суде и консультирует по юридическим вопросам.", 
+                    img: "https://via.placeholder.com/300?text=Юрист" 
+                }
+            ],
+            sign: [
+                { 
+                    title: "Программист", 
+                    description: "Программист разрабатывает программное обеспечение, пишет код для компьютеров и мобильных устройств.", 
+                    img: "https://via.placeholder.com/300?text=Программист" 
+                },
+                { 
+                    title: "Бухгалтер", 
+                    description: "Бухгалтер ведет финансовый учет организации, составляет отчетность и рассчитывает налоги.", 
+                    img: "https://via.placeholder.com/300?text=Бухгалтер" 
+                },
+                { 
+                    title: "Экономист", 
+                    description: "Экономист анализирует финансовую деятельность предприятий, прогнозирует экономические процессы.", 
+                    img: "https://via.placeholder.com/300?text=Экономист" 
+                },
+                { 
+                    title: "Математик", 
+                    description: "Математик проводит исследования в области математики, решает сложные задачи и разрабатывает новые теории.", 
+                    img: "https://via.placeholder.com/300?text=Математик" 
+                },
+                { 
+                    title: "Логист", 
+                    description: "Логист организует перевозки грузов, оптимизирует цепочки поставок и управляет складскими запасами.", 
+                    img: "https://via.placeholder.com/300?text=Логист" 
+                }
+            ],
+            art: [
+                { 
+                    title: "Художник", 
+                    description: "Художник создает произведения изобразительного искусства в различных техниках и стилях.", 
+                    img: "https://via.placeholder.com/300?text=Художник" 
+                },
+                { 
+                    title: "Дизайнер", 
+                    description: "Дизайнер разрабатывает визуальные решения для интерьеров, одежды, веб-сайтов и других областей.", 
+                    img: "https://via.placeholder.com/300?text=Дизайнер" 
+                },
+                { 
+                    title: "Музыкант", 
+                    description: "Музыкант исполняет или сочиняет музыкальные произведения, играет на музыкальных инструментах.", 
+                    img: "https://via.placeholder.com/300?text=Музыкант" 
+                },
+                { 
+                    title: "Актер", 
+                    description: "Актер играет роли в театре, кино или на телевидении, воплощает художественные образы.", 
+                    img: "https://via.placeholder.com/300?text=Актер" 
+                },
+                { 
+                    title: "Архитектор", 
+                    description: "Архитектор проектирует здания и сооружения, сочетая функциональность и эстетику.", 
+                    img: "https://via.placeholder.com/300?text=Архитектор" 
+                }
+            ]
+        };
+
+        // Счетчики сфер
+        let scores = {
+            nature: 0,
+            tech: 0,
+            human: 0,
+            sign: 0,
+            art: 0
+        };
+
+        let currentQuestion = 0;
+
+        // Начать тест
+        function startTest() {
+            document.getElementById("start-screen").style.display = "none";
+            document.getElementById("question-screen").style.display = "block";
+            showQuestion(0);
+        }
+
+        // Показать вопрос
+        function showQuestion(index) {
+            const question = questions[index];
+            document.getElementById("question-text").textContent = `Вопрос ${index + 1} из 20 - Что вы выберите?`;
+            document.getElementById("option1-text").textContent = question.option1;
+            document.getElementById("option2-text").textContent = question.option2;
+            document.getElementById("option1-img").src = question.img1;
+            document.getElementById("option2-img").src = question.img2;
+            
+            // Обновляем прогресс-бар
+            const progress = ((index + 1) / 20) * 100;
+            document.getElementById("progress-bar").style.width = `${progress}%`;
+        }
+
+        // Выбор ответа
+        function selectOption(option) {
+            const question = questions[currentQuestion];
+            if (option === 1) {
+                scores[question.sphere1]++;
+            } else {
+                scores[question.sphere2]++;
+            }
+
+            currentQuestion++;
+            if (currentQuestion < 20) { // Всего 20 вопросов
+                showQuestion(currentQuestion);
+            } else {
+                showResults();
+            }
+        }
+
+        // Показать результаты
+        function showResults() {
+            document.getElementById("question-screen").style.display = "none";
+            document.getElementById("result-screen").style.display = "block";
+
+            // Обновляем баллы
+            document.getElementById("nature-score").textContent = scores.nature;
+            document.getElementById("tech-score").textContent = scores.tech;
+            document.getElementById("human-score").textContent = scores.human;
+            document.getElementById("sign-score").textContent = scores.sign;
+            document.getElementById("art-score").textContent = scores.art;
+
+            // Определяем рекомендуемые сферы
+            let maxScore = Math.max(...Object.values(scores));
+            let recommendedSpheres = [];
+            for (let sphere in scores) {
+                if (scores[sphere] === maxScore) {
+                    recommendedSpheres.push(sphere);
+                }
+            }
+
+            // Выводим рекомендации
+            let recommendationText = "Вы набрали высокие баллы в сфере: ";
+            
+            if (recommendedSpheres.includes("nature")) {
+                recommendationText += "«Человек-природа» (все профессии, связанные с растениеводством, животноводством и лесным хозяйством: садовник, зоотехник, ветеринар, животновод, геолог, агроном, биолог, лесник, пчеловод, почвовед и т. д.) ";
+            }
+            if (recommendedSpheres.includes("tech")) {
+                recommendationText += "«Человек-техника» (технические профессии: слесарь, токарь, радиотехник, связист, швея, водитель, электрик, инженер, монтажник и т. д.) ";
+            }
+            if (recommendedSpheres.includes("human")) {
+                recommendationText += "«Человек-человек» (все профессии, связанные с обслуживанием людей, с общением: продавец, учитель, воспитатель детского сада, няня, преподаватель техникума, вуза; врач; медицинская сестра, официант, администратор и т. д.) ";
+            }
+            if (recommendedSpheres.includes("sign")) {
+                recommendationText += "«Человек-знак» (все профессии, связанные с обсчетами, цифровыми и буквенными знаками: чертежник, машинистка и оператор ЭВМ, радист, плановик, экономист, корректор, программист, телеграфист, наборщик и т. д.) ";
+            }
+            if (recommendedSpheres.includes("art")) {
+                recommendationText += "«Человек-художественный образ» (все творческие специальности: маляр, гравер, архитектор, фотограф, актер, шлифовальщик камней, художник, музыкант, модельер, стеклодув и т. д.) ";
+            }
+
+            document.getElementById("recommendation-text").textContent = recommendationText;
+
+            // Показываем рекомендуемые профессии
+            const careersContainer = document.getElementById("careers-container");
+            careersContainer.innerHTML = "<h3>Рекомендуемые профессии:</h3><div class='careers' id='careers-list'></div>";
+            
+            recommendedSpheres.forEach(sphere => {
+                if (careers[sphere]) {
+                    careers[sphere].forEach(career => {
+                        const careerElement = document.createElement("div");
+                        careerElement.className = "career";
+                        careerElement.innerHTML = `
+                            <img src="${career.img}" alt="${career.title}">
+                            <div>${career.title}</div>
+                        `;
+                        careerElement.onclick = () => showCareerDetails(career);
+                        document.getElementById("careers-list").appendChild(careerElement);
+                    });
+                }
+            });
+        }
+
+        // Показать подробности о профессии
+        function showCareerDetails(career) {
+            document.getElementById("career-title").textContent = career.title;
+            document.getElementById("career-description").textContent = career.description;
+            document.getElementById("career-detail-img").src = career.img;
+            document.getElementById("career-details").style.display = "block";
+        }
+
+        // Закрыть подробности о профессии
+        function closeCareerDetails() {
+            document.getElementById("career-details").style.display = "none";
+        }
+
+        // Начать тест заново
+        function restartTest() {
+            // Сбросить счетчики
+            scores = {
+                nature: 0,
+                tech: 0,
+                human: 0,
+                sign: 0,
+                art: 0
+            };
+            currentQuestion = 0;
+            
+            document.getElementById("result-screen").style.display = "none";
+            document.getElementById("start-screen").style.display = "block";
+        }
+    </script>
+</body>
+</html>
